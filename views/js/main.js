@@ -305,10 +305,6 @@ function getNoun(y) {
 var adjectives = ["dark", "color", "whimsical", "shiny", "noisy", "apocalyptic", "insulting", "praise", "scientific"]; // types of adjectives for pizza titles
 var nouns = ["animals", "everyday", "fantasy", "gross", "horror", "jewelry", "places", "scifi"]; // types of nouns for pizza titles
 
-var imageWorker = new Worker('js/worker.js');
-
-console.log("Image Worker: " + imageWorker);
-
 // Generates random numbers for getAdj and getNoun functions and returns a new pizza name
 function generator(adj, noun) {
     var adjectives = getAdj(adj);
@@ -487,7 +483,8 @@ var resizePizzas = function(size) {
             default:
                 console.log("bug in sizeSwitcher");
         }
-        var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
+        var randomPizzas = document.getElementsByClassName('randomPizzaContainer');
+
 
         for (var i = 0; i < randomPizzas.length; i++) {
             randomPizzas[i].style.width = newWidth + "%";
@@ -507,8 +504,8 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-    var pizzasDiv = document.getElementById("randomPizzas");
     pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -541,8 +538,9 @@ function updatePositions() {
     window.performance.mark("mark_start_frame");
 
     var items = document.querySelectorAll('.mover');
+    var scrollTopValue = (document.body.scrollTop / 1250);
     for (var i = 0; i < items.length; i++) {
-        var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+        var phase = Math.sin(scrollTopValue + (i % 5));
         items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
     }
 
@@ -563,8 +561,12 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
     var cols = 8;
     var s = 256;
-    for (var i = 0; i < 200; i++) {
-        var elem = document.createElement('img');
+    var elem;
+    var rows = window.screen.height / s;
+    var reqPizzas = cols * rows;
+    console.log(reqPizzas);
+    for (var i = 0; i < reqPizzas; i++) {
+        elem = document.createElement('img');
         elem.className = 'mover';
         elem.src = "images/pizza.png";
         elem.style.height = "100px";
